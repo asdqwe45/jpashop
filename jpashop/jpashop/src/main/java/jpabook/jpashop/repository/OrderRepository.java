@@ -1,7 +1,8 @@
 package jpabook.jpashop.repository;
-import jpabook.jpashop.domain.Member;
+import jpabook.jpashop.domain.*;
 import jpabook.jpashop.domain.Order;
-import jpabook.jpashop.domain.OrderSearch;
+import jpabook.jpashop.service.SimpleOrderQueryDto;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -9,6 +10,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,4 +81,19 @@ public class OrderRepository {
         }
         return query.getResultList();
     }
+
+    public List<Order> findAlllwithMemberDellivery() {
+        return em.createQuery("select o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d", Order.class
+        ).getResultList();
+    }
+    public List<SimpleOrderQueryDto> findOrderDtos(){
+        return em.createQuery("select new jpabook.jpashop.service.SimpleOrderQueryDto(o.id,m.name, o.orderDate,o.status, d.address )" +
+                        " from Order o" +
+                " join o.member m"+
+                " join o.delivery d",SimpleOrderQueryDto.class)
+                .getResultList();
+    }
+
 }
